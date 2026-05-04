@@ -1,0 +1,129 @@
+---
+// SPDX-FileCopyrightText: AnmiTaliDev <anmitalidev@nuros.org>
+// SPDX-License-Identifier: AGPL-3.0-only
+interface Props {
+  name: string;
+  hex: string;
+  rgb: string;
+  description: string;
+}
+
+const { name, hex, rgb, description } = Astro.props;
+---
+<div class="color-card">
+  <div class="swatch" style={`background-color: ${hex};`}></div>
+  <div class="info">
+    <h3 class="name">{name}</h3>
+    <div class="codes">
+      <button class="hex-badge" data-copy={hex}>{hex}</button>
+      <span class="rgb-badge">rgb({rgb})</span>
+    </div>
+    <p class="desc">{description}</p>
+  </div>
+</div>
+
+<style>
+  .color-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition:
+      border-color var(--transition),
+      transform var(--transition-slow),
+      box-shadow var(--transition-slow);
+  }
+
+  .color-card:hover {
+    border-color: var(--border-hover);
+    transform: translateY(-4px);
+    box-shadow: 0 20px 48px rgba(0, 0, 0, 0.45);
+  }
+
+  .swatch {
+    height: 160px;
+    width: 100%;
+    transition: height var(--transition-slow);
+  }
+
+  .color-card:hover .swatch {
+    height: 200px;
+  }
+
+  .info {
+    padding: 1.25rem;
+  }
+
+  .name {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 0.6rem;
+    letter-spacing: 0.01em;
+  }
+
+  .codes {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .hex-badge {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--accent);
+    background: var(--accent-dim);
+    border: 1px solid rgba(155, 181, 214, 0.2);
+    border-radius: var(--radius-xs);
+    padding: 0.25rem 0.55rem;
+    cursor: pointer;
+    transition: background var(--transition), transform var(--transition);
+  }
+
+  .hex-badge:hover {
+    background: rgba(155, 181, 214, 0.22);
+    transform: scale(1.04);
+  }
+
+  .rgb-badge {
+    font-family: var(--font-mono);
+    font-size: 0.73rem;
+    color: var(--text-muted);
+    padding: 0.25rem 0.55rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xs);
+  }
+
+  .desc {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.55;
+    font-style: italic;
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('.hex-badge[data-copy]').forEach((btn) => {
+    btn.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      const color = btn.dataset.copy!;
+      try {
+        await navigator.clipboard.writeText(color);
+        const original = btn.textContent;
+        btn.textContent = 'Copied';
+        btn.style.color = '#7de0a0';
+        btn.style.borderColor = 'rgba(125, 224, 160, 0.3)';
+        btn.style.background = 'rgba(125, 224, 160, 0.08)';
+        setTimeout(() => {
+          btn.textContent = original;
+          btn.style.color = '';
+          btn.style.borderColor = '';
+          btn.style.background = '';
+        }, 1400);
+      } catch {}
+    });
+  });
+</script>
